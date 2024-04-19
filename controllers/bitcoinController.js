@@ -4,8 +4,15 @@ module.exports = {
     buyOrderRequest: async (req, res) => {
         try {
             console.log(req.body);
-            const { isSell, currentPrice, price, ema, divergence, leverage } =
-                req.body;
+            const {
+                isSell,
+                currentPrice,
+                price,
+                ema,
+                divergence,
+                leverage,
+                quantity,
+            } = req.body;
             let order;
 
             if (isSell) {
@@ -27,6 +34,7 @@ module.exports = {
                     ema,
                     divergence,
                     leverage,
+                    quantity,
                 });
 
                 await order.save();
@@ -39,8 +47,15 @@ module.exports = {
     },
 
     sellOrderRequest: async (req, res) => {
-        const { isBuy, currentPrice, price, ema, divergence, leverage } =
-            req.body;
+        const {
+            isBuy,
+            currentPrice,
+            price,
+            ema,
+            divergence,
+            leverage,
+            quantity,
+        } = req.body;
 
         console.log(req.body);
 
@@ -69,6 +84,7 @@ module.exports = {
                     ema,
                     divergence,
                     leverage,
+                    quantity,
                 });
                 await order.save();
             }
