@@ -13,12 +13,13 @@ module.exports = {
                     sellPrice: price,
                     orderType: "sell",
                 });
-
-                order.buyPrice = Number(currentPrice);
-                order.buyCurrentPrice = Number(currentPrice);
-                order.profit = Number(currentPrice - order.sellPrice);
-                await order.save();
-            } else if (!isSell) {
+                if (order) {
+                    order.buyPrice = Number(currentPrice);
+                    order.buyCurrentPrice = Number(currentPrice);
+                    order.profit = Number(currentPrice - order.sellPrice);
+                    await order.save();
+                }
+            } else {
                 order = new CryptoOrder({
                     orderType: "buy",
                     buyPrice: Number(price),
@@ -38,20 +39,29 @@ module.exports = {
     },
 
     sellOrderRequest: async (req, res) => {
+        const { isBuy, currentPrice, price, ema, divergence, leverage } =
+            req.body;
+
+        console.log(req.body);
+
+        let order;
+
         try {
-            const { isBuy, currentPrice, price, ema, divergence, leverage } =
-                req.body;
-            let order;
             if (isBuy) {
+                // Find existing buy order and update it
                 order = await CryptoOrder.findOne({
                     buyPrice: price,
                     orderType: "buy",
                 });
-                order.sellPrice = Number(currentPrice);
-                order.sellCurrentPrice = Number(currentPrice);
-                order.profit = Number(order.buyPrice - currentPrice);
-                await order.save();
-            } else if (!isBuy) {
+
+                if (order) {
+                    order.sellPrice = Number(currentPrice);
+                    order.sellCurrentPrice = Number(currentPrice);
+                    order.profit = Number(order.buyPrice - currentPrice);
+                    await order.save();
+                }
+            } else {
+                // Create a new sell order
                 order = new CryptoOrder({
                     orderType: "sell",
                     sellPrice: Number(price),
@@ -62,8 +72,10 @@ module.exports = {
                 });
                 await order.save();
             }
+
             res.status(200).json(order);
         } catch (e) {
+            console.log(e);
             sendErrorResponse(res, 500, e);
         }
     },

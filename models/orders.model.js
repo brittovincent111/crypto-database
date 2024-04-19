@@ -36,6 +36,9 @@ const orderSchema = new Schema(
         divergence: {
             type: String,
         },
+        quantity: {
+            type: String,
+        },
         remark: {
             type: String,
         },
